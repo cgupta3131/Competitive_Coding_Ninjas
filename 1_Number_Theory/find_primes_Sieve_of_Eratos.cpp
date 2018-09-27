@@ -14,11 +14,9 @@ int main()
 		arr[i] = true;
 
 	arr[0] = false;
-	arr[0] = false;
-
+	arr[1] = false;
 
 	int x = int( sqrt(n) );
-
 
 	for(int i=2;i<=x;i++)
 	{
