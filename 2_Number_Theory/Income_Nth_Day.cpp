@@ -9,6 +9,16 @@ long long int modular = pow(10,9) + 7;
 
 void multiply(long long int A[2][2], long long int M[2][2])
 {	
+	A[0][0] %= (modular - 1);
+	A[0][1] %= (modular - 1);
+	A[1][0] %= (modular - 1);
+	A[1][1] %= (modular - 1);
+
+	M[0][0] %= (modular - 1);
+	M[0][1] %= (modular - 1);
+	M[1][0] %= (modular - 1);
+	M[1][1] %= (modular - 1);
+
 
 	long long int first = ( A[0][0] * M[0][0] )% (modular - 1)  + ( A[0][1] * M[1][0] ) % (modular - 1); 	
 	long long int second = ( A[0][0] * M[0][1] ) % (modular - 1) + ( A[0][1] * M[1][1] ) % (modular - 1); 
