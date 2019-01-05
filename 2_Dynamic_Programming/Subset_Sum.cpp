@@ -46,9 +46,9 @@ int main()
 
 
 	if( Subset_Sum(n, input, helper_array, k) == k )
-		cout << "YES" << endl;
+		cout << "Yes" << endl;
 	else
-		cout << "NO" << endl;	
+		cout << "No" << endl;	
 
 	return 0 ; 
 
