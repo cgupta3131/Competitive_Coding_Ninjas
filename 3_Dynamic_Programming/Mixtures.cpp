@@ -1,6 +1,6 @@
-#include<bits/stdc++.h>
+	#include<bits/stdc++.h>
 
-using namespace std;
+	using namespace std;
 
 
 int minSmoke(int *arr, int **dp, int i, int j)
