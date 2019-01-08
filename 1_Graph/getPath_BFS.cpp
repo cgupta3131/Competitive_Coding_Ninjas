@@ -62,11 +62,9 @@ void getPath2(int **edges, int n, int *visited, int v1, int v2)
 		{	
 			if(edges[front][i] == 1 && visited[i] == 0)
 			{
-
 				visited[i] = 1;
 				pendingVertices.push(i);
 				parent[i] = front;
-
 
 				if(i == v2)
 				{
