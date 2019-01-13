@@ -25,7 +25,6 @@ typedef set<int> seti;
 #define MOD 1000000007
 
 //cin.ignore(numeric_limits<streamsize>::max(), '\n'); -> Clears the input buffer	
-
 vector<int> BFS(vector<int> *edges, int source, bool *visited)
 {
 	queue<int> q;
@@ -49,66 +48,82 @@ vector<int> BFS(vector<int> *edges, int source, bool *visited)
 				q.push(edges[front][i]);
 				visited[edges[front][i]] = true;
 			}
+
 		}
+
 	}
 
 	return output;
 
 }
 
-
-
 int main()
 {
-	int v,e; //Number of vertices and edges
+	ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	cin >> v >> e;
-	
-	vector<int> *edges = new vector<int>[v+1];
+    int t;
+    cin >> t;
 
-	for(int i=0;i<e;i++)
-	{
-		int x,y;
-		cin >> x >> y;
+    while(t--)
+    {
+    	int n,m;
 
-		edges[x].push_back(y);
-		edges[y].push_back(x);
-	}
+    	cin >> n >> m;
 
-	for(int i=1;i<=v;i++)
-	{
-		cout << i << " : ";
-		for(int j=0;j<edges[i].size();j++)
-			cout << edges[i][j] << " ";
-		cout << endl;
-	}
+    	vector<int> *edges = new vector<int>[n+1];
 
-	bool *visited = new bool[v+1];
+    	for(int i=0;i<m;i++)
+    	{
+    		int x,y;
+    		cin >> x >> y;
 
-	for(int i=1;i<=v;i++)
-		visited[i] = false;
+    		edges[x].pb(y);
+    		edges[y].pb(x);
+    	}
 
-	vector< vector<int> > allComponents;
+    	vector< vector<int> > allComponents;
 
-	for(int i=1;i<=v;i++)
-	{
-		if(visited[i] == false)
+    	bool *visited = new bool[n+1];
+		for(int i=1;i<=n;i++)
+			visited[i] = false;
+
+		for(int i=1;i<=n;i++)
 		{
-			vector<int> component = BFS(edges, i, visited);
-			allComponents.push_back(component);
+			if(visited[i] == false)
+			{
+				vector<int> component = BFS(edges, i, visited);
+				allComponents.pb(component);
+			}
 		}
-	}
 
-	cout << allComponents.size() << " Size " << "\n";
+		delete [] edges;
+		delete [] visited;
 
-	for(int i=0;i<allComponents.size();i++)
-	{
-		for(int j=0;j<allComponents[i].size();j++)
-			cout << allComponents[i][j] << " ";
-		cout << endl;
-	}
+		ll max = -1;
+		ll *arr = new ll[n+1];
 
+		for(int i=1;i<=n;i++)
+			cin >> arr[i];
 
+		for(int i=0;i<allComponents.size();i++)
+		{
+			ll temp_sum = 0;
+			for(int j=0;j<allComponents[i].size();j++)
+				temp_sum += arr[ allComponents[i][j] ];
+
+			if(temp_sum > max)
+				max = temp_sum;
+		}
+
+		delete [] arr;
+
+		cout << max << "\n";
+
+    }
+
+	
 	return 0 ; 
 
 }

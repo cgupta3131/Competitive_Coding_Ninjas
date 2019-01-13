@@ -24,20 +24,26 @@ typedef set<int> seti;
 #define s second
 #define MOD 1000000007
 
-//cin.ignore(numeric_limits<streamsize>::max(), '\n'); -> Clears the input buffer	
+//cin.ignore(numeric_limits<streamsize>::max(), '\n'); -> Clears the input buffer
 
-vector<int> BFS(vector<int> *edges, int source, bool *visited)
+bool BFS(vector<int> *edges, int source, int n, int dest)
 {
+	bool *visited = new bool[n+1];
+	for(int i=1;i<=n;i++)
+		visited[i] = false;
+
 	queue<int> q;
 	q.push(source);
 	visited[source] = true;
 
-	vector<int> output;
+	int flag = 0;
 
 	while(!q.empty())
 	{	
 		int front = q.front();
-		output.push_back(front);
+		if(front == dest)
+			return true;
+		
 		q.pop();
 
 		for(int i=0;i<edges[front].size();i++)
@@ -49,65 +55,38 @@ vector<int> BFS(vector<int> *edges, int source, bool *visited)
 				q.push(edges[front][i]);
 				visited[edges[front][i]] = true;
 			}
+
 		}
+
 	}
 
-	return output;
+	return false;
 
-}
-
-
+}	
 
 int main()
 {
-	int v,e; //Number of vertices and edges
+	ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
 
-	cin >> v >> e;
-	
-	vector<int> *edges = new vector<int>[v+1];
+	int n, t;
+	cin >> n >> t;
 
-	for(int i=0;i<e;i++)
-	{
-		int x,y;
-		cin >> x >> y;
+	int *input = new int[n];
 
-		edges[x].push_back(y);
-		edges[y].push_back(x);
-	}
+	for(int i=1;i<n;i++)
+		cin >> input[i];
 
-	for(int i=1;i<=v;i++)
-	{
-		cout << i << " : ";
-		for(int j=0;j<edges[i].size();j++)
-			cout << edges[i][j] << " ";
-		cout << endl;
-	}
+	vector<int> *edges = new vector<int>[n+1];
 
-	bool *visited = new bool[v+1];
+	for(int i=1;i<n;i++) //portal connects (i) and (input[i] + i) in unidirection
+		edges[i].pb(input[i] + i);
 
-	for(int i=1;i<=v;i++)
-		visited[i] = false;
-
-	vector< vector<int> > allComponents;
-
-	for(int i=1;i<=v;i++)
-	{
-		if(visited[i] == false)
-		{
-			vector<int> component = BFS(edges, i, visited);
-			allComponents.push_back(component);
-		}
-	}
-
-	cout << allComponents.size() << " Size " << "\n";
-
-	for(int i=0;i<allComponents.size();i++)
-	{
-		for(int j=0;j<allComponents[i].size();j++)
-			cout << allComponents[i][j] << " ";
-		cout << endl;
-	}
-
+	if( BFS(edges,1,n,t ) )
+		cout << "YES" << endl;
+	else
+		cout << "NO" << endl;
 
 	return 0 ; 
 
