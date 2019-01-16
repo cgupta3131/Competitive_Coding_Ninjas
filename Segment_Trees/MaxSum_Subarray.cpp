@@ -26,21 +26,36 @@ typedef set<int> seti;
 
 //cin.ignore(numeric_limits<streamsize>::max(), '\n'); -> Clears the input buffer
 
-class triplet{
+class Node{
 
 public:
-	int a,b,c; //a denotes left side, b denotes the middle part and c denotes the right part
+	int maxPrefixSum;
+	int maxSuffixSum;
+	int totalSum;
+	int maxSubarraySum;
 
+	Node()
+	{
+		maxPrefixSum = maxSuffixSum = maxSubarraySum = totalSum = -100000;
+
+	}
 };	
 
+int max_value(int a,int b, int c, int d, int e)
+{
+	return max(a,max (b, max (c,max(d,e) ) ) );
+}
 
-void buildTree(int *arr, triplet *tree, int start, int end, int treeNode)
+void buildTree(int *arr, Node *tree, int start, int end, int treeNode)
 {
 	if(start == end)
 	{
-		tree[treeNode].a = 0;
-		tree[treeNode].b = arr[start];
-		tree[treeNode].c = 0;
+		//cout << "Start : " << start << endl;
+		//cout << "treeNode : " << treeNode << endl;
+		tree[treeNode].maxPrefixSum = arr[start];
+		tree[treeNode].maxSuffixSum = arr[start];
+		tree[treeNode].totalSum = arr[start];
+		tree[treeNode].maxSubarraySum = arr[start];
 
 		return;
 	}
@@ -50,48 +65,29 @@ void buildTree(int *arr, triplet *tree, int start, int end, int treeNode)
 	buildTree(arr,tree,start,mid,2*treeNode);
 	buildTree(arr,tree,mid+1,end,2*treeNode+1);
 
-	int a1 = tree[2*treeNode].a;
-	int b1 = tree[2*treeNode].b;
-	int c1 = tree[2*treeNode].c;
-	int a2 = tree[2*treeNode+1].a;
-	int b2 = tree[2*treeNode+1].b;
-	int c2 = tree[2*treeNode+1].c;
+	tree[treeNode].maxPrefixSum = max(tree[2*treeNode].maxPrefixSum, 
+							tree[2*treeNode].totalSum + tree[2*treeNode+1].maxPrefixSum);
 
-	int maxi = max(max(b1,b2),b1+b2+c1+a2);
+	tree[treeNode].maxSuffixSum = max(tree[2*treeNode+1].maxSuffixSum, 
+							tree[2*treeNode+1].totalSum + tree[2*treeNode].maxSuffixSum);
 
-	if(maxi == b1)
-	{	
-		tree[treeNode].a = a1;
-		tree[treeNode].b = b1;
-		tree[treeNode].c = c1+a2+b2+c2;
-	}
+	tree[treeNode].totalSum = tree[2*treeNode].totalSum + tree[2*treeNode+1].totalSum;
 
-	else if(maxi == b2)
-	{	
-		tree[treeNode].a = a1+b1+c1+a2;
-		tree[treeNode].b = b2;
-		tree[treeNode].c = c2;
-	}
-
-	else
-	{	
-		tree[treeNode].a = a1;
-		tree[treeNode].b = b1+c1+a2+b2;
-		tree[treeNode].c = c2;
-	}
+	tree[treeNode].maxSubarraySum = max_value(tree[2*treeNode].maxSubarraySum, 
+									tree[2*treeNode+1].maxSubarraySum, 
+									tree[2*treeNode].maxSuffixSum + 
+									tree[2*treeNode+1].maxPrefixSum, 
+									tree[treeNode].maxPrefixSum,
+									tree[treeNode].maxSuffixSum);
 }
 
 
-triplet query(triplet *tree, int start, int end, int treeNode, int left, int right)
+Node query(Node *tree, int start, int end, int treeNode, int left, int right)
 {
 
 	if(left > end || right < start)
 	{
-		triplet temp;
-		temp.a = 0;
-		temp.b = 0;
-		temp.c = 0;
-
+		Node temp;
 		return temp;
 	}
 
@@ -100,43 +96,21 @@ triplet query(triplet *tree, int start, int end, int treeNode, int left, int rig
 
 	int mid = (start+end)/2;
 
-	triplet first = query(tree,start,mid,2*treeNode,left,right);
-	triplet second = query(tree,mid+1,end,2*treeNode+1,left,right);
 
-	int a1 = first.a;
-	int b1 = first.b;
-	int c1 = first.c;
-	int a2 = second.a;
-	int b2 = second.b;
-	int c2 = second.c;
+	Node first = query(tree,start,mid,2*treeNode,left,right);
+	Node second = query(tree,mid+1,end,2*treeNode+1,left,right);
 
-	triplet output;
+	Node output;
 
-	int maxi = max(max(b1,b2),b1+b2+c1+a2);
-
-	if(maxi == b1)
-	{	
-		output.a = a1;
-		output.b = b1;
-		output.c = c1+a2+b2+c2;
-	}
-
-	else if(maxi == b2)
-	{	
-		output.a = a1+b1+c1+a2;
-		output.b = b2;
-		output.c = c2;
-	}
-
-	else
-	{	
-		output.a = a1;
-		output.b = b1+c1+a2+b2;
-		output.c = c2;
-	}
+	output.maxPrefixSum = max(first.maxPrefixSum, first.totalSum + second.maxPrefixSum);
+	output.maxSuffixSum = max(second.maxSuffixSum, second.totalSum + first.maxSuffixSum);
+	output.totalSum = first.totalSum + second.totalSum;
+	output.maxSubarraySum = max_value(first.maxSubarraySum, second.maxSubarraySum, 
+									first.maxSuffixSum + second.maxPrefixSum,
+									output.maxPrefixSum, output.maxSuffixSum);
 
 	return output;
-}
+} 
 
 
 int main()
@@ -153,38 +127,27 @@ int main()
     for(int i=0;i<n;i++)
     	cin >> arr[i];
 
-    triplet *tree = new triplet[4*n];
-
-    for(int i=0;i<4*n;i++)
-    {
-    	tree[i].a = 0;
-    	tree[i].b = 0;
-    	tree[i].c = 0;
-    }
+    Node *tree = new Node[4*n];
 
     buildTree(arr,tree,0,n-1,1);
-   /*   for(int i=0;i<4*n;i++)
+    /*  for(int i=0;i<4*n;i++)
     {
-    	if(tree[i].a == 0 && tree[i].b == 0 && tree[i].c == 0)
-    		continue;
-    	else
-    		cout << tree[i].a << " " << tree[i].b << " " << tree[i].c << "\n";
-    }  */
+    	cout << i << " " << tree[i].maxSubarraySum << endl;
+    }  */    
 
-    
-
+    //cout << endl;
     int q;
     cin >> q;
-
+    //cout << "QUERIES " << endl;
     while(q--)
     {
     	int l,r;
     	cin >> l >> r;
 
-    	triplet temp = query(tree,0,n-1,1,l-1,r-1);
-    	cout << temp.b << "\n";
+    	Node temp = query(tree,0,n-1,1,l-1,r-1);
+    	cout << temp.maxSubarraySum << endl;
 
-    }
+    }  
 
 
     	
