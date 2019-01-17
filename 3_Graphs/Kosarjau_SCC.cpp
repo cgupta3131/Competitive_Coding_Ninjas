@@ -24,9 +24,9 @@ typedef set<int> seti;
 #define s second
 #define MOD 1000000007
 
-//cin.ignore(numeric_limits<streamsize>::max(), '\n'); -> Clears the input buffer	
+//cin.ignore(numeric_limits<streamsize>::max(), '\n'); -> Clears the input buffer
+
 stack<int> s;
-vector<int> final;
 
 void DFS_1(vector<int> *edges, int source, bool *visited)
 {
@@ -41,19 +41,37 @@ void DFS_1(vector<int> *edges, int source, bool *visited)
 	s.push(source);
 }
 
-void DFS_2(vector<int> *edges, int source, bool *visited)
+vector<int> BFS(vector<int> *edges, int source, bool *visited)
 {
+	queue<int> q;
+	q.push(source);
 	visited[source] = true;
 
-	for(int i=0;i<edges[source].size();i++)
-	{
-		if( visited[ edges[source][i] ] == false)
-			DFS_2(edges, edges[source][i], visited);
+	vector<int> output;
+
+	while(!q.empty())
+	{	
+		int front = q.front();
+		output.push_back(front);
+		q.pop();
+
+		for(int i=0;i<edges[front].size();i++)
+		{
+			//cout << "Front : " << front <<  " Back : " << edges[front][i] << endl;
+			//edge between front and edges[front][i]
+			if(!visited[ edges[front][i] ])
+			{
+				q.push(edges[front][i]);
+				visited[edges[front][i]] = true;
+			}
+
+		}
+
 	}
 
-	final.pb(source);
-}
+	return output;
 
+}	
 
 int main()
 {
@@ -82,38 +100,59 @@ int main()
 		visited[i] = false;
 
 	for(int i=1;i<=n;i++)
-		DFS_1(edgesT,1,visited);
-
-	for(int i=1;i<=n;i++)
-	{
-		if(!visited[i]) //means that the graph is dis-connected!
-		{
-			cout << 0 << endl;
-			return 0;
-		}
-	}
+		if(!visited[i])
+			DFS_1(edges,i,visited);
 
 	for(int i=1;i<=n;i++)
 		visited[i] = false;
 
-	int top = s.top();
-	DFS_2(edges,top,visited);
+	vector<vector <int> > allComponents;
 
-	delete [] visited;
-	delete [] edges;
-	delete [] edgesT;
+	while(!s.empty())
+	{
+		int top = s.top();
+		s.pop();
 
-	sort(final.begin(),final.end());
+		if( !visited[top] )
+		{
+			vector<int> component = BFS(edgesT, top, visited);
+			allComponents.pb(component);
+		}
+	}
 
-	cout << final.size() << "\n";
 
-	for(int i=0;i<final.size();i++)
-		cout << final[i] << " ";
-	cout << "\n";
+	for(int i=0;i<allComponents.size();i++)
+	{
+		for(int j=0;j<allComponents[i].size();j++)
+			cout << allComponents[i][j] << " ";
+		cout << "\n";
+	}
 
 	return 0 ; 
 
 }
+
+
+/*  
+
+INPUT DATA
+
+10 12
+1 2
+2 3
+3 4
+4 1
+4 5
+5 6
+6 7
+7 5
+8 7
+8 9
+9 8
+10 9 
+
+ */
+
 
 
 
