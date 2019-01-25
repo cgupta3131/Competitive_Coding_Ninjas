@@ -149,6 +149,39 @@ int main()
 			continue;
 		}
 
+		bool *visited2 = new bool[n+1];
+		for(int i=1;i<=n;i++)
+			visited2[i] = false;
+
+		for(int i=1;i<=n;i++)
+		{
+			if(parent[i] == -1 || visited[i] == true)
+			{
+				visited2[i] = true;
+				continue;
+			}
+
+			int temp = parent[i];
+			visited2[i] = true;
+			vector<int> temp;
+			temp.pb(i);
+
+			while(1)
+			{
+				if(parent[temp] == -1)
+				{
+					visited2[temp] = true;
+					continue;
+				}
+
+				visited2[temp] = true;
+				temp = parent[temp];
+				temp.pb(temp);
+			}
+
+
+		}
+
 		int *visited = new int[n+1];
 		for(int i=1;i<=n;i++)
 			visited[i] = 0;

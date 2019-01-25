@@ -42,6 +42,7 @@ public:
 
 };
 
+
 double area(Polygon p, int n)
 {
 	double fArea = 0;
